@@ -17,6 +17,7 @@ cd ..
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 mkdir bin
 make
+cd ..
 ```
 
 # Run Circuit Synthesis
@@ -48,5 +49,6 @@ mv ./output/Bristol_Processed/* ./ckt_eval/test/
 ./bin/cipher_eval takes 4 paramters input-size output-size output-wire-size path-to-input-file
 
 ```bash
+cd ckt_eval
 ./bin/cipher_eval 64 64 504 ./test/adder64.txt
 ```
