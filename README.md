@@ -25,6 +25,7 @@ make
 python3 cipher_synthesis.py
 ```
 Input file location- ./input/Bristol/circuit.txt
+
 Output file location- ./output/Bristol_Optimized/circuit_opt.txt
 
 # Parse Optimized Circuits
@@ -34,6 +35,7 @@ Parse optimized circuits to run it on encrypted data using TFHE
 python3 circuit_parse.py
 ```
 Input file location- ./output/Bristol_Optimized/circuit_opt.txt
+
 Output file location- ./output/Bristol_Processed/circuit_proc.txt
 
 Transfer the parsed circuits to test folder in ckt_eval directory 
