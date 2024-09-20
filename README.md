@@ -24,7 +24,7 @@ make
 ```bash
 python3 cipher_synthesis.py
 ```
-Input file location- ./input/Bristol/circuit.txt
+Input file location- ./input/Bristol/circuit.txt  
 
 Output file location- ./output/Bristol_Optimized/circuit_opt.txt
 
@@ -34,7 +34,7 @@ Parse optimized circuits to run it on encrypted data using TFHE
 ```bash
 python3 circuit_parse.py
 ```
-Input file location- ./output/Bristol_Optimized/circuit_opt.txt
+Input file location- ./output/Bristol_Optimized/circuit_opt.txt  
 
 Output file location- ./output/Bristol_Processed/circuit_proc.txt
 
