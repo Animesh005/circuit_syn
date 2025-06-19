@@ -33,7 +33,7 @@ using namespace std;
 */
 EXPORT void
 bootsNAND(LweSample *result, const LweSample *ca, const LweSample *cb, const TFheGateBootstrappingCloudKeySet *bk) {
-    static const Torus32 MU = modSwitchToTorus32(1, 8);
+    static const Torus32 MU = modSwitchToTorus32(1, 16);
     const LweParams *in_out_params = bk->params->in_out_params;
 
     LweSample *temp_result = new_LweSample(in_out_params);
@@ -41,32 +41,8 @@ bootsNAND(LweSample *result, const LweSample *ca, const LweSample *cb, const TFh
     //compute: (0,1/8) - 2*ca - 2*cb
     static const Torus32 NandConst = modSwitchToTorus32(1, 8);
     lweNoiselessTrivial(temp_result, NandConst, in_out_params);
-    lweAddMulTo(temp_result, 2, ca, in_out_params);
-    lweAddMulTo(temp_result, 2, cb, in_out_params);
-
-    tfhe_bootstrap_FFT(result, bk->bkFFT, MU, temp_result);
-
-    delete_LweSample(temp_result);
-}
-
-/*
- * Homomorphic bootstrapped NAND3 gate
- * Takes in input 3 LWE samples (with message space [-1/16, 1/16], noise<1/32)
- * Outputs a LWE bootstrapped sample (with message space [-1/16, 1/16], noise<1/32)
-*/
-EXPORT void
-bootsNAND3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const TFheGateBootstrappingCloudKeySet *bk) {
-    static const Torus32 MU = modSwitchToTorus32(1, 8);
-    const LweParams *in_out_params = bk->params->in_out_params;
-
-    LweSample *temp_result = new_LweSample(in_out_params);
-
-    //compute: (0,1/4) - ca - cb - cc
-    static const Torus32 NandConst = modSwitchToTorus32(1, 4);
-    lweNoiselessTrivial(temp_result, NandConst, in_out_params);
-    lweSubTo(temp_result, ca, in_out_params);
-    lweSubTo(temp_result, cb, in_out_params);
-    lweSubTo(temp_result, cc, in_out_params);
+    lweSubMulTo(temp_result, 2, ca, in_out_params);
+    lweSubMulTo(temp_result, 2, cb, in_out_params);
 
     tfhe_bootstrap_FFT(result, bk->bkFFT, MU, temp_result);
 
@@ -80,7 +56,7 @@ bootsNAND3(LweSample *result, const LweSample *ca, const LweSample *cb, const Lw
 */
 EXPORT void
 bootsOR(LweSample *result, const LweSample *ca, const LweSample *cb, const TFheGateBootstrappingCloudKeySet *bk) {
-    static const Torus32 MU = modSwitchToTorus32(1, 8);
+    static const Torus32 MU = modSwitchToTorus32(1, 16);
     const LweParams *in_out_params = bk->params->in_out_params;
 
     LweSample *temp_result = new_LweSample(in_out_params);
@@ -103,7 +79,7 @@ bootsOR(LweSample *result, const LweSample *ca, const LweSample *cb, const TFheG
 */
 EXPORT void
 bootsOR3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const TFheGateBootstrappingCloudKeySet *bk) {
-    static const Torus32 MU = modSwitchToTorus32(1, 8);
+    static const Torus32 MU = modSwitchToTorus32(1, 16);
     const LweParams *in_out_params = bk->params->in_out_params;
 
     LweSample *temp_result = new_LweSample(in_out_params);
@@ -128,7 +104,7 @@ bootsOR3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweS
 */
 EXPORT void
 bootsAND(LweSample *result, const LweSample *ca, const LweSample *cb, const TFheGateBootstrappingCloudKeySet *bk) {
-    static const Torus32 MU = modSwitchToTorus32(1, 8);
+    static const Torus32 MU = modSwitchToTorus32(1, 16);
     const LweParams *in_out_params = bk->params->in_out_params;
 
     LweSample *temp_result = new_LweSample(in_out_params);
@@ -145,13 +121,36 @@ bootsAND(LweSample *result, const LweSample *ca, const LweSample *cb, const TFhe
 }
 
 /*
+ * Homomorphic bootstrapped XOR gate
+ * Takes in input 2 LWE samples (with message space [-1/16,1/16], noise<1/32)
+ * Outputs a LWE bootstrapped sample (with message space [-1/16,1/16], noise<1/32)
+*/
+EXPORT void
+bootsXOR(LweSample *result, const LweSample *ca, const LweSample *cb, const TFheGateBootstrappingCloudKeySet *bk) {
+    static const Torus32 MU = modSwitchToTorus32(1, 16);
+    const LweParams *in_out_params = bk->params->in_out_params;
+
+    LweSample *temp_result = new_LweSample(in_out_params);
+
+    //compute: (0,1/4) + 4*(ca + cb)
+    static const Torus32 XorConst = modSwitchToTorus32(1, 4);
+    lweNoiselessTrivial(temp_result, XorConst, in_out_params);
+    lweAddMulTo(temp_result, 4, ca, in_out_params);
+    lweAddMulTo(temp_result, 4, cb, in_out_params);
+
+    tfhe_bootstrap_FFT(result, bk->bkFFT, MU, temp_result);
+
+    delete_LweSample(temp_result);
+}
+
+/*
  * Homomorphic bootstrapped AND3 gate
  * Takes in input 3 LWE samples (with message space [-1/16, 1/16], noise<1/32)
  * Outputs a LWE bootstrapped sample (with message space [-1/16, 1/16], noise<1/32)
 */
 EXPORT void
 bootsAND3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const TFheGateBootstrappingCloudKeySet *bk) {
-    static const Torus32 MU = modSwitchToTorus32(1, 8);
+    static const Torus32 MU = modSwitchToTorus32(1, 16);
     const LweParams *in_out_params = bk->params->in_out_params;
 
     LweSample *temp_result = new_LweSample(in_out_params);
@@ -180,8 +179,8 @@ bootsAND4(LweSample *result, const LweSample *ca, const LweSample *cb, const Lwe
 
     LweSample *temp_result = new_LweSample(in_out_params);
 
-    //compute: (0,-3/8) + ca + cb + cc + cd
-    static const Torus32 AndConst = modSwitchToTorus32(-3, 8);
+    //compute: (0,-3/16) + ca + cb + cc + cd
+    static const Torus32 AndConst = modSwitchToTorus32(-3, 16);
     lweNoiselessTrivial(temp_result, AndConst, in_out_params);
     lweAddTo(temp_result, ca, in_out_params);
     lweAddTo(temp_result, cb, in_out_params);
@@ -194,22 +193,24 @@ bootsAND4(LweSample *result, const LweSample *ca, const LweSample *cb, const Lwe
 }
 
 /*
- * Homomorphic bootstrapped XOR gate
- * Takes in input 2 LWE samples (with message space [-1/8,1/8], noise<1/32)
- * Outputs a LWE bootstrapped sample (with message space [-1/8,1/8], noise<1/32)
+ * Homomorphic bootstrapped OR4 gate
+ * Takes in input 4 LWE samples (with message space [-1/16, 1/16], noise<1/32)
+ * Outputs a LWE bootstrapped sample (with message space [-1/16, 1/16], noise<1/32)
 */
 EXPORT void
-bootsXOR(LweSample *result, const LweSample *ca, const LweSample *cb, const TFheGateBootstrappingCloudKeySet *bk) {
-    static const Torus32 MU = modSwitchToTorus32(1, 8);
+bootsOR4(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const LweSample *cd, const TFheGateBootstrappingCloudKeySet *bk) {
+    static const Torus32 MU = modSwitchToTorus32(1, 16);
     const LweParams *in_out_params = bk->params->in_out_params;
 
     LweSample *temp_result = new_LweSample(in_out_params);
 
-    //compute: (0,1/4) + 4*(ca + cb)
-    static const Torus32 XorConst = modSwitchToTorus32(1, 4);
-    lweNoiselessTrivial(temp_result, XorConst, in_out_params);
-    lweAddMulTo(temp_result, 4, ca, in_out_params);
-    lweAddMulTo(temp_result, 4, cb, in_out_params);
+    //compute: (0,3/16) + ca + cb + cc + cd
+    static const Torus32 AndConst = modSwitchToTorus32(3, 16);
+    lweNoiselessTrivial(temp_result, AndConst, in_out_params);
+    lweAddTo(temp_result, ca, in_out_params);
+    lweAddTo(temp_result, cb, in_out_params);
+    lweAddTo(temp_result, cc, in_out_params);
+    lweAddTo(temp_result, cd, in_out_params);
 
     tfhe_bootstrap_FFT(result, bk->bkFFT, MU, temp_result);
 
@@ -265,6 +266,30 @@ bootsAX3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweS
 }
 
 /*
+ * Homomorphic bootstrapped NAND-XOR gate
+ * Takes in input 3 LWE samples (with message space [-1/16, 1/16], noise<1/32)
+ * Outputs a LWE bootstrapped sample (with message space [-1/16, 1/16], noise<1/32)
+*/
+EXPORT void
+bootsNAX3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const TFheGateBootstrappingCloudKeySet *bk) {
+    static const Torus32 MU = modSwitchToTorus32(1, 16);
+    const LweParams *in_out_params = bk->params->in_out_params;
+
+    LweSample *temp_result = new_LweSample(in_out_params);
+
+    //compute: (0,3/8) - 2*(ca + cb) + 4*cc
+    static const Torus32 AXConst = modSwitchToTorus32(1, 8);
+    lweNoiselessTrivial(temp_result, AXConst, in_out_params);
+    lweSubMulTo(temp_result, 2, ca, in_out_params);
+    lweSubMulTo(temp_result, 2, cb, in_out_params);
+    lweAddMulTo(temp_result, 4, cc, in_out_params);
+
+    tfhe_bootstrap_FFT(result, bk->bkFFT, MU, temp_result);
+
+    delete_LweSample(temp_result);
+}
+
+/*
  * Homomorphic bootstrapped OR-XOR gate
  * Takes in input 3 LWE samples (with message space [-1/16, 1/16], noise<1/32)
  * Outputs a LWE bootstrapped sample (with message space [-1/16, 1/16], noise<1/32)
@@ -289,13 +314,37 @@ bootsOX3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweS
 }
 
 /*
+ * Homomorphic bootstrapped NOR-XOR gate
+ * Takes in input 3 LWE samples (with message space [-1/16, 1/16], noise<1/32)
+ * Outputs a LWE bootstrapped sample (with message space [-1/16, 1/16], noise<1/32)
+*/
+EXPORT void
+bootsNOX3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const TFheGateBootstrappingCloudKeySet *bk) {
+    static const Torus32 MU = modSwitchToTorus32(1, 16);
+    const LweParams *in_out_params = bk->params->in_out_params;
+
+    LweSample *temp_result = new_LweSample(in_out_params);
+
+    //compute: (0,1/8) - 2*(ca + cb) + 4*cc
+    static const Torus32 AXConst = modSwitchToTorus32(1, 8);
+    lweNoiselessTrivial(temp_result, AXConst, in_out_params);
+    lweSubMulTo(temp_result, 2, ca, in_out_params);
+    lweSubMulTo(temp_result, 2, cb, in_out_params);
+    lweAddMulTo(temp_result, 4, cc, in_out_params);
+
+    tfhe_bootstrap_FFT(result, bk->bkFFT, MU, temp_result);
+
+    delete_LweSample(temp_result);
+}
+
+/*
  * Homomorphic bootstrapped XNOR gate
  * Takes in input 2 LWE samples (with message space [-1/8,1/8], noise<1/16)
  * Outputs a LWE bootstrapped sample (with message space [-1/8,1/8], noise<1/16)
 */
 EXPORT void
 bootsXNOR(LweSample *result, const LweSample *ca, const LweSample *cb, const TFheGateBootstrappingCloudKeySet *bk) {
-    static const Torus32 MU = modSwitchToTorus32(1, 8);
+    static const Torus32 MU = modSwitchToTorus32(1, 16);
     const LweParams *in_out_params = bk->params->in_out_params;
 
     LweSample *temp_result = new_LweSample(in_out_params);
