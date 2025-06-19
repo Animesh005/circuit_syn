@@ -50,9 +50,6 @@ EXPORT void bootsCONSTANT(LweSample *result, int32_t value, const TFheGateBootst
 /** bootstrapped Nand Gate */
 EXPORT void
 bootsNAND(LweSample *result, const LweSample *ca, const LweSample *cb, const TFheGateBootstrappingCloudKeySet *bk);
-/** bootstrapped Nand3 Gate */
-EXPORT void
-bootsNAND3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const TFheGateBootstrappingCloudKeySet *bk);
 /** bootstrapped Or Gate:  */
 EXPORT void
 bootsOR(LweSample *result, const LweSample *ca, const LweSample *cb, const TFheGateBootstrappingCloudKeySet *bk);
@@ -74,13 +71,19 @@ bootsXOR(LweSample *result, const LweSample *ca, const LweSample *cb, const TFhe
 /** bootstrapped Xor3 Gate: result = a xor b xor c*/
 EXPORT void
 bootsXOR3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const TFheGateBootstrappingCloudKeySet *bk);
-/** bootstrapped Xnor Gate: result = (a==b) */
 /** bootstrapped AND-XOR Gate: result = (a and b) xor c */
 EXPORT void
 bootsAX3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const TFheGateBootstrappingCloudKeySet *bk);
+/** bootstrapped NAND-XOR Gate: result = ~(a and b) xor c */
+EXPORT void
+bootsNAX3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const TFheGateBootstrappingCloudKeySet *bk);
 /** bootstrapped OR-XOR Gate: result = (a or b) xor c */
 EXPORT void
 bootsOX3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const TFheGateBootstrappingCloudKeySet *bk);
+/** bootstrapped NOR-XOR Gate: result = ~(a or b) xor c */
+EXPORT void
+bootsNOX3(LweSample *result, const LweSample *ca, const LweSample *cb, const LweSample *cc, const TFheGateBootstrappingCloudKeySet *bk);
+/** bootstrapped Xnor Gate: result = (a==b) */
 EXPORT void
 bootsXNOR(LweSample *result, const LweSample *ca, const LweSample *cb, const TFheGateBootstrappingCloudKeySet *bk);
 /** bootstrapped Not Gate: result = not(a) */
