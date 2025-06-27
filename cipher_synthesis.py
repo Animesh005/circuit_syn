@@ -17,11 +17,10 @@ with open(path_to_netlist) as f:
 # remove new line characters
 content_list = [x.strip() for x in content_list]
 
-# Remove sublists with size less than 6
 content_list = [sublist for sublist in content_list if len(sublist) >= 2]
-content_list = content_list[3:-1]
+content_list = content_list[3:]
 
-print(content_list)
+# print(content_list)
 
 result = []
 
@@ -30,7 +29,7 @@ for x in content_list:
     # int_temp = [int(y) for y in temp]
     result.append(temp)
 
-print("Netlist size before: ", len(result))
+print("\nNetlist size before: ", len(result))
 
 # finding AND output used as input to AND (replace)
 
@@ -45,8 +44,7 @@ for id in range(len(result)):
     count = 0
 
     for j in range(id, len(result)):
-      if ((result[j][2] == wo) or (result[j][3] == wo)) and (result[j][-1] == 'AND' or result[j][-1] == 'NAND'):
-        # print("start index: ", id, " -> end index: ", j)
+      if ((result[j][2] == wo) or (result[j][3] == wo)) and (result[j][-1] == 'AND'):
         if (result[j][2] == wo):
           tmp_idx = result[j][3]
         if (result[j][3] == wo):
@@ -58,9 +56,12 @@ for id in range(len(result)):
         if count == 2:
           count_dep = count_dep + 1
           # print("start index: ", id, result[id], " -> dependent index: ", j, result[j])
-          result[id] = ['3', '1', result[id][2], result[id][3], tmp_idx, 'AND']
-          # print(result[id])
-          remove_list.append(j)
+          tmp_list = ['3', '1', result[id][2], result[id][3], tmp_idx, result[j][4], 'AND3']
+          # remove repetitive input from which are common in result[id] and result[j]
+          # tmp_list_unique = list(set(tmp_list))
+          result[j] = tmp_list
+          result[id] = ["replaced"]
+          remove_list.append(id)
 
 result = remove_elements_by_indices(result, remove_list)
 print("Netlist size after AND3 gates: ", len(result))
@@ -79,7 +80,6 @@ for id in range(len(result)):
 
     for j in range(id, len(result)):
       if ((result[j][2] == wo) or (result[j][3] == wo)) and (result[j][-1] == 'XOR'):
-        # print("start index: ", id, " -> end index: ", j)
         if (result[j][2] == wo):
           tmp_idx = result[j][3]
         if (result[j][3] == wo):
@@ -91,9 +91,10 @@ for id in range(len(result)):
         if count == 2:
           count_dep = count_dep + 1
           # print("start index: ", id, result[id], " -> dependent index: ", j, result[j])
-          result[id] = ['3', '1', result[id][2], result[id][3], tmp_idx, 'XOR']
-          # print(result[id])
-          remove_list.append(j)
+          tmp_list = ['3', '1', result[id][2], result[id][3], tmp_idx, result[j][4], 'XOR3']
+          result[j] = tmp_list
+          result[id] = ["replaced"]
+          remove_list.append(id)
 
 result = remove_elements_by_indices(result, remove_list)
 print("Netlist size after XOR3 gates: ", len(result))
@@ -112,7 +113,6 @@ for id in range(len(result)):
 
     for j in range(id, len(result)):
       if ((result[j][2] == wo) or (result[j][3] == wo)) and (result[j][-1] == 'XOR'):
-        # print("start index: ", id, " -> end index: ", j)
         if (result[j][2] == wo):
           tmp_idx = result[j][3]
         if (result[j][3] == wo):
@@ -124,46 +124,15 @@ for id in range(len(result)):
         if count == 2:
           count_dep = count_dep + 1
           # print("start index: ", id, result[id], " -> dependent index: ", j, result[j])
-          result[id] = ['3', '1', result[id][2], result[id][3], tmp_idx, 'AND-XOR']
-          # print(result[id])
-          remove_list.append(j)
+          tmp_list = ['3', '1', result[id][2], result[id][3], tmp_idx, result[j][4], 'AND-XOR']
+          result[j] = tmp_list
+          result[id] = ["replaced"]
+          remove_list.append(id)
 
 result = remove_elements_by_indices(result, remove_list)
 print("Netlist size after AND-XOR gates: ", len(result))
 
-# finding OR output used as input to XOR (replace)
-
-count_dep = 0
-remove_list = []
-for id in range(len(result)):
-  if result[id][-1] == 'OR':
-    w1 = result[id][2]
-    w2 = result[id][3]
-    wo = result[id][4]
-
-    count = 0
-
-    for j in range(id, len(result)):
-      if ((result[j][2] == wo) or (result[j][3] == wo)) and (result[j][-1] == 'XOR'):
-        # print("start index: ", id, " -> end index: ", j)
-        if (result[j][2] == wo):
-          tmp_idx = result[j][3]
-        if (result[j][3] == wo):
-          tmp_idx = result[j][2]
-
-        for k in range(len(result)):
-          if wo in result[k]:
-            count = count + 1
-        if count == 2:
-          count_dep = count_dep + 1
-          # print("start index: ", id, result[id], " -> dependent index: ", j, result[j])
-          result[id] = ['3', '1', result[id][2], result[id][3], tmp_idx, 'OR-XOR']
-          # print(result[id])
-          remove_list.append(j)
-
-result = remove_elements_by_indices(result, remove_list)
-print("Netlist size after OR-XOR gates: ", len(result))
-
+print("\n\nFinal netlist size: ", len(result))
 
 # Open the file in write mode
 with open(path_to_netlist_out, 'w') as file:
